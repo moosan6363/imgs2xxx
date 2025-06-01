@@ -1,6 +1,7 @@
-from PIL import Image
 import argparse
 import os
+
+from PIL import Image
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

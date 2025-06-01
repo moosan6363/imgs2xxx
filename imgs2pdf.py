@@ -1,6 +1,7 @@
 import argparse
 import os
-from fpdf import FPDF
+
+from PIL import Image
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert images to PDF")
@@ -8,7 +9,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    exts = [".jpg", ".png", "jpeg", "webp"]
+    exts = [".jpg", ".png", ".jpeg", ".webp"]
 
     # Get the file paths in the directory
     img_paths = [
@@ -16,15 +17,18 @@ if __name__ == "__main__":
         for filename in os.listdir(args.dir)
         if os.path.splitext(filename)[1].lower() in exts
     ]
-    # file_paths = [os.path.join(args.dir, filename) for filename in os.listdir(args.dir)]
 
-    # Sort the file paths in alphabetical order
     img_paths.sort()
 
-    # Create a PDF file
-    pdf = FPDF()
+    images = []
     for img_path in img_paths:
-        pdf.add_page()
-        pdf.image(img_path, 0, 0, 210, 297)
+        with Image.open(img_path) as img:
+            images.append(img.copy())
 
-    pdf.output("output.pdf", "F")
+    if images:
+        images[0].save(
+            f"{os.path.basename(args.dir)}.pdf",
+            save_all=True,
+            append_images=images[1:],
+            resolution=100.0,
+        )
